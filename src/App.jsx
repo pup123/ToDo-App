@@ -5,6 +5,8 @@ function App() {
 
 const [todos,setTodos]=useState([])
 const [todoValue,setTodoValue]=useState('')
+const [editIndex, setEditIndex] = useState(null)
+
 
 function saveData(newList){
 
@@ -12,11 +14,22 @@ function saveData(newList){
 }
 
 
-function handleAddTodos(newTodo){
-  const newTodoList =[...todos,newTodo]
-  saveData(newTodoList)
-  setTodos(newTodoList)
+function handleAddTodos(newTodo) {
+  if (editIndex !== null) {
+    const updatedTodos = [...todos]
+    updatedTodos[editIndex] = newTodo
+    saveData(updatedTodos)
+    setTodos(updatedTodos)
+    setEditIndex(null) 
+  } else {
+    const newTodoList = [...todos, newTodo]
+    saveData(newTodoList)
+    setTodos(newTodoList)
+  }
+  setTodoValue('')
 }
+
+
 function handeleDeletTodo(index){
   const newTodoList=todos.filter((todo,todoIndex)=>{
     return todoIndex !== index
@@ -24,11 +37,12 @@ function handeleDeletTodo(index){
   saveData(newTodoList)
   setTodos(newTodoList)
 }
-function handleEditTodo(index){
-  const valueTobeEdited=todos[index]
-  setTodoValue(valueTobeEdited)
-  handeleDeletTodo(index)
+function handleEditTodo(index) {
+  const valueToBeEdited = todos[index]
+  setTodoValue(valueToBeEdited)
+  setEditIndex(index)
 }
+
 
 useEffect(()=>{
   if(!localStorage){
