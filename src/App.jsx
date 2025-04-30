@@ -58,7 +58,12 @@ useEffect(()=>{
 
   return (
     <>
-     <TodoInput todoValue={todoValue} setTodoValue={setTodoValue} handleAddTodos={handleAddTodos}/>
+<TodoInput
+  todoValue={todoValue}
+  setTodoValue={setTodoValue}
+  handleAddTodos={handleAddTodos}
+  editIndex={editIndex}
+/>
      <TodoList handleEditTodo={handleEditTodo} handeleDeletTodo={handeleDeletTodo} todos={todos}/>
     </>
   )
