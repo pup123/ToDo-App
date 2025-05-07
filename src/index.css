@@ -65,6 +65,13 @@ header input {
 p {
   font-size: 0.9em;
 }
+header input:focus {
+  background-color: #e0f2fe; 
+  box-shadow: 0 0 0 2px #2563eb; 
+  transition: background-color 0.5s, box-shadow 0.3s;
+}
+
+
 
 .main {
   display: flex;
@@ -84,6 +91,12 @@ p {
 .todoItem p {
   flex: 1;
 }
+
+
+.completed {
+  text-decoration: line-through; /* شطب النص عند الإكمال */
+}
+
 
 .actionsContainer {
   display: flex;

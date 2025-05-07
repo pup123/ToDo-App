@@ -1,38 +1,36 @@
+import { useEffect, useRef } from 'react'
 
-const TodoInput = (props) => {
-  const {handleAddTodos,todoValue,setTodoValue,editIndex}=props
+export default function TodoInput(props) {
+  const { handleAddTodos, todoValue, setTodoValue, editIndex } = props
+
+  const isEditing = editIndex !== null
+  const inputRef = useRef(null) // مرجع لحقل الإدخال
+
+  // إعطاء التركيز عند التعديل
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [isEditing]) // نراقب تغيير حالة التعديل
+
   return (
     <header>
-      <input value={todoValue} onChange={(e)=>{
-                    setTodoValue(e.target.value)
-      }}
-       placeholder='Enter todo...'/>
-      <button onClick={()=>{
-        handleAddTodos(todoValue)
-        setTodoValue('')
-      }}> {editIndex !== null ? 'Edit' : 'Add'}</button>
+      <input
+        ref={inputRef} // ربط المرجع
+        value={todoValue.text || ''}
+        onChange={(e) => setTodoValue({ ...todoValue, text: e.target.value })}
+        placeholder="Enter todo..."
+      />
+      <button onClick={() => {
+        if ((todoValue.text || '').trim()) {
+          handleAddTodos({
+            ...todoValue,
+            text: todoValue.text.trim()
+          })
+        }
+      }}>
+        {isEditing ? 'Edit' : 'Add'}
+      </button>
     </header>
   )
 }
-
-export default TodoInput
-// import React from 'react'
-
-// function TodoInput({ todoValue, setTodoValue, handleAddTodos, editIndex }) {
-//   return (
-//     <div>
-//       <input
-//         type="text"
-//         value={todoValue}
-//         onChange={(e) => setTodoValue(e.target.value)}
-//         placeholder="Add Todo..."
-//       />
-
-//       <button onClick={() => handleAddTodos(todoValue)}>
-//         {editIndex !== null ? 'Edit' : 'Add'}
-//       </button>
-//     </div>
-//   )
-// }
-
-// export default TodoInput

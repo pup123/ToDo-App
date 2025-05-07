@@ -1,70 +1,65 @@
-import { useEffect, useState } from "react"
+import { useState, useEffect } from "react"
 import TodoInput from "./components/TodoInput"
-import TodoList from './components/TodoList'
+import TodoList from "./components/TodoList"
+
 function App() {
+  const [todos, setTodos] = useState([])
+  const [todoValue, setTodoValue] = useState({ text: '' })
+  const [editIndex, setEditIndex] = useState(null)
 
-const [todos,setTodos]=useState([])
-const [todoValue,setTodoValue]=useState('')
-const [editIndex, setEditIndex] = useState(null)
+  function persistData(newList) {
+    localStorage.setItem('todos', JSON.stringify(newList))
+  }
 
-
-function saveData(newList){
-
-  localStorage.setItem('todos',JSON.stringify({todos:newList}))
-}
-
-
-function handleAddTodos(newTodo) {
-  if (editIndex !== null) {
-    const updatedTodos = [...todos]
-    updatedTodos[editIndex] = newTodo
-    saveData(updatedTodos)
-    setTodos(updatedTodos)
-    setEditIndex(null) 
-  } else {
-    const newTodoList = [...todos, newTodo]
-    saveData(newTodoList)
+  function handleAddTodos(newTodo) {
+    let newTodoList
+    if (editIndex !== null) {
+      newTodoList = [...todos]
+      newTodoList[editIndex] = newTodo
+      setEditIndex(null)
+    } else {
+      // إضافة مع توليد id تلقائي أو بأي طريقة تختارها
+      newTodoList = [...todos, { ...newTodo, id: Date.now() }]
+    }
+    persistData(newTodoList)
     setTodos(newTodoList)
+    setTodoValue({ text: '' })
   }
-  setTodoValue('')
-}
 
-
-function handeleDeletTodo(index){
-  const newTodoList=todos.filter((todo,todoIndex)=>{
-    return todoIndex !== index
-  })
-  saveData(newTodoList)
-  setTodos(newTodoList)
-}
-function handleEditTodo(index) {
-  const valueToBeEdited = todos[index]
-  setTodoValue(valueToBeEdited)
-  setEditIndex(index)
-}
-
-
-useEffect(()=>{
-  if(!localStorage){
-    return
+  function handleDeleteTodo(index) {
+    const newTodoList = todos.filter((_, todoIndex) => todoIndex !== index)
+    persistData(newTodoList)
+    setTodos(newTodoList)
+    if (editIndex === index) {
+      setTodoValue({ text: '' })
+      setEditIndex(null)
+    }
   }
-  let localTodos=localStorage.getItem('todos')
-  if(!localTodos){
-    return
+
+  function handleEditTodo(index) {
+    const valueToBeEdited = todos[index]
+    setTodoValue({ text: valueToBeEdited.text })
+    setEditIndex(index)
   }
-  localTodos=JSON.parse(localTodos).todos
-  setTodos(localTodos)
-},[])
+
+  useEffect(() => {
+    const localTodos = JSON.parse(localStorage.getItem('todos') || '[]')
+    setTodos(localTodos)
+  }, [])
 
   return (
     <>
-<TodoInput
-  todoValue={todoValue}
-  setTodoValue={setTodoValue}
-  handleAddTodos={handleAddTodos}
-  editIndex={editIndex}
-/>
-     <TodoList handleEditTodo={handleEditTodo} handeleDeletTodo={handeleDeletTodo} todos={todos}/>
+      <TodoInput
+        todoValue={todoValue}
+        setTodoValue={setTodoValue}
+        handleAddTodos={handleAddTodos}
+        editIndex={editIndex}
+      />
+      <TodoList
+        todos={todos}
+        handleEditTodo={handleEditTodo}
+        handleDeleteTodo={handleDeleteTodo}
+      />
     </>
   )
 }
